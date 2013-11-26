@@ -1,92 +1,119 @@
 package org.stego;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 public class Encrypt {
-	public static int p = 11;
-	public static int q = 19;
-	public static int n = p * q;
-	public static int x = 101;
+	private BigInteger p;
+	private BigInteger q;
+	public BigInteger n;
 	
-	public static void main(String[] args) {
-		CryptoText cryptoText = encryption(new boolean[] {false, true, true, true, true, true, true, true, true, true, true, true, true, true, true,true, true, true, true, true});
-		printArray(cryptoText.cryptoText);
-		printArray(decryption(cryptoText.cryptoText, cryptoText.randomKey));
+	private BigInteger x;
+	
+	public Encrypt() {
+		p = newPrimare(16);
+		q = newPrimare(16);
+		n = p.multiply(q);
+		x = newPrimareX();  
+		
+		p(x.toString() + "x1");
 	}
 	
-	public static CryptoText encryption(boolean[] text) {
-		long firstX = (x * x) % n;
+	private BigInteger newPrimareX() {
+		BigInteger primareX = newPrimare(8);
+		p(primareX.toString());
+		boolean isModEqual = n.remainder(primareX).toString().equals("0");
+		
+		return !isModEqual ? primareX : newPrimareX();
+	}
+	
+	private BigInteger newPrimare(int bitLength) {
+		BigInteger primre = BigInteger.probablePrime(bitLength, new Random());
+		boolean isModEqual = primre.remainder(new BigInteger("4")).toString().equals("3");
+		
+		return isModEqual ? primre : newPrimare(bitLength);
+	}
+	
+	public CryptoText encryption(boolean[] text) {
+		BigInteger firstX = x.multiply(x).remainder(n);
+		p("firstX" + firstX.toString());
 		return encryptionOrDecryption(text, firstX);
 	}
 	
-	public static boolean[] decryption(boolean[] text, long randomKey) {
-		long firstX = getX0(text.length, randomKey);
+	public boolean[] decryption(boolean[] text, BigInteger randomKey) {
+		BigInteger firstX = getX0(text.length, randomKey);
+		p("firstX" + firstX.toString());
 		return encryptionOrDecryption(text, firstX).cryptoText;
 	}
 	
-	public static CryptoText encryptionOrDecryption(boolean[] text, long firstX) {
-		long random;
+	private CryptoText encryptionOrDecryption(boolean[] text, BigInteger firstX) {
+		BigInteger random;
 		boolean item;
+		
 		boolean[] cryptoText = text;
-		long previousItem = firstX;
+		BigInteger previousItem = firstX;
+		
 		for (int i = 0; i < cryptoText.length; i++) {
 			random = randomGenerator(previousItem);
 			previousItem = random;
-			item = (random % 2) == 1 ? true : false;
+			
+			item = random.mod(new BigInteger("2")).equals("1") ? true : false;
+			p(true + "");
 			cryptoText[i] ^= item;
 		}
 		
 		return new CryptoText(cryptoText, previousItem);
 	}
 	
-	public static long randomGenerator(long previousItem){
-		return (previousItem * previousItem) % n;		
+	//BBS - генератор випадкових чисел 
+	private BigInteger randomGenerator(BigInteger previousItem){
+		return previousItem.multiply(previousItem).remainder(n);		
 	}
 	
-	public static long getX0(int m, long mItem) {
+	private BigInteger getX0(int m, BigInteger randomKey) {
 		Euclidean params = extendedEuclid(p, q);
-		int a = params.x;
-		int b = params.y;
+		BigInteger a = params.x;
+		BigInteger b = params.y;
 		
-		double l = Math.pow(((p + 1) / 4), m) % (p -1);
-		double k = Math.pow(((q + 1) / 4), m) % (q -1);
+		BigInteger one = new BigInteger("1");
+		BigInteger four = new BigInteger("4");
 		
-		double u = Math.pow(mItem % p, l) % p;
-		double v = Math.pow(mItem % q, k) % q;
+		BigInteger l = p.add(one).divide(four).pow(m).remainder(p.subtract(one));
+		BigInteger k = q.add(one).divide(four).pow(m).remainder(q.subtract(one));
 		
-		return (long) (a*p*v + b*q*u) % n;
+		p("a " + a.toString());
+		p("b " + b.toString());
+		p("l " + l.toString());
+		p("k " + l.toString());
+		
+		BigInteger u = randomKey.remainder(p).pow(Integer.parseInt(l.toString())).remainder(p);
+		BigInteger v = randomKey.remainder(q).pow(Integer.parseInt(k.toString())).remainder(q);
+		
+		BigInteger mulA = a.multiply(p).multiply(v);
+		BigInteger mulB = b.multiply(q).multiply(u);
+		return mulA.add(mulB).remainder(n);
 	}
 	
-	public static Euclidean extendedEuclid(int p, int q){
-		if(q == 0){
-			return new Euclidean(p, 1, 0);
+	private Euclidean extendedEuclid(BigInteger p2, BigInteger q2){
+		if(q2.toString().equals("0")){
+			return new Euclidean(p2, new BigInteger("1"), new BigInteger("0"));
 		}
-		Euclidean e = extendedEuclid(q, p % q);
-		return new Euclidean(e.d, e.y, e.x - (p/q*e.y));
+		Euclidean e = extendedEuclid(q2, p2.remainder(q2));
+		BigInteger p2q2 = p2.divide(q2).multiply(e.y);
+		return new Euclidean(e.d, e.y, e.x.subtract(p2q2));
 	}
 	
 	public static void p(String str) {
 		System.out.println(str);
 	}
-	
-	public static void printArray(long[] array) {
-		for (int i = 0; i < array.length; i++) {
-			 p(i + " - " + array[i]);
-		}
-	}
-	public static void printArray(boolean[] array) {
-		for (int i = 0; i < array.length; i++) {
-			 p(i + " - " + array[i]);
-		}
-	}
 }
 
 class Euclidean{
-	public int d;
-	public int x;
-	public int y;
+	public BigInteger d;
+	public BigInteger x;
+	public BigInteger y;
 	
-	public Euclidean(int d, int x, int y) {
+	public Euclidean(BigInteger d, BigInteger x, BigInteger y) {
 		this.d = d;
 		this.x = x;
 		this.y = y;
@@ -100,11 +127,11 @@ class Euclidean{
 
 class CryptoText{
 	public boolean[] cryptoText;
-	public long randomKey;
+	public BigInteger randomKey;
 	
-	public CryptoText(boolean[] cryptoText, long randomKey) {
+	public CryptoText(boolean[] cryptoText, BigInteger previousItem) {
 		this.cryptoText = cryptoText;
-		this.randomKey = randomKey;
+		this.randomKey = previousItem;
 	}
 
 }
