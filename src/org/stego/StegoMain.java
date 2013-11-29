@@ -1,9 +1,14 @@
 package org.stego;
 
+import java.math.BigInteger;
+
+import org.stego.helpers.Helpers;
+import org.stego.models.CryptoText;
+
 
 public class StegoMain {
 	public static void main(String arg[]) {
-
+//
 //		String text = "¿¡¬";
 //		String str = "‡øbssssasss‡ssss‡‡‡‡";
 //		
@@ -14,26 +19,19 @@ public class StegoMain {
 //		p(encryptedStr);
 //		p(stego.decryption(encryptedStr));
 		
-		Encrypt encrypt = new Encrypt();
-		CryptoText cryptoText = encrypt.encryption(new boolean[] {false, true, false, true, false, true, false, true, false, true, true, true, true, true, true,true, true, true, true, true});
-		printArray(cryptoText.cryptoText);
-		printArray(encrypt.decryption(cryptoText.cryptoText, cryptoText.randomKey));
+		boolean[] arrayBolean =  {true, true, true, false, false, false}; //111000
 		
-//		primareGenerator();
+		Helpers.printArray(arrayBolean);
 		
-	}
-	public static void p(String str) {
-		System.out.println(str);
-	}
+		BigInteger p = GMAlgorithm.newPrimare(16);
+		BigInteger q = GMAlgorithm.newPrimare(16);
 		
-	public static void printArray(long[] array) {
-		for (int i = 0; i < array.length; i++) {
-			 p(i + " - " + array[i]);
-		}
-	}
-	public static void printArray(boolean[] array) {
-		for (int i = 0; i < array.length; i++) {
-			 p(i + " - " + array[i]);
-		}
+		Encryption encrypt = new Encryption(p.multiply(q));
+		CryptoText cryptoText = encrypt.encryption(arrayBolean);
+		Helpers.printArray(cryptoText.cryptoText);
+		
+		Decryption d = new Decryption(p, q);
+		Helpers.printArray(d.decryption(cryptoText.cryptoText, cryptoText.lastX));
+				
 	}
 }
