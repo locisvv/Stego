@@ -42,11 +42,11 @@ public class Stego {
 		int k = 0;
 		for (int i = 0; i < arrayStr.length; i++) {
 			char letter = arrayStr[i];
-
+			
 			char c = alfabet.get(letter) != null ?  alfabet.get(letter) : 0 ;	
-			if (c != 0){
-				newStr += encrypted[k] ? c : letter; 
-				k = k == 5 ? 0 : ++k;
+			if (c != 0 && k < encrypted.length - 1){
+				newStr += encrypted[k] ? c : letter;
+				k++;
 			}
 			else{
 				newStr += letter; 
@@ -55,21 +55,31 @@ public class Stego {
 		
 		return newStr;
 	}
-	public String decryption(String str){
-		String result = "";
+	public boolean[] decryption(String str, int length){
+		boolean[] result = new boolean[length];
+		
 		char[] arrayStr = str.toCharArray();
 		char charInver;
 		char letter;
+		
+		int k = 0;
 		for (int i = 0; i < arrayStr.length; i++) {
+			if(k >= length - 1){
+				break;
+			}
+			
 			letter = arrayStr[i];
+			
 			charInver = alfabetInvert.get(letter) != null ?  alfabetInvert.get(letter) : 0 ;
 			if(charInver != 0){
-				result += "1";
+				result[k] = true;
+				k++;
 			}
 			else{
 				charInver = alfabet.get(letter) != null ?  alfabet.get(letter) : 0 ;
 				if(charInver != 0){
-					result += "0";
+					result[k] = false;
+					k++;
 				}
 			}
 		}
