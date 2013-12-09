@@ -44,7 +44,7 @@ public class Stego {
 			char letter = arrayStr[i];
 			
 			char c = alfabet.get(letter) != null ?  alfabet.get(letter) : 0 ;	
-			if (c != 0 && k < encrypted.length - 1){
+			if (c != 0 && k < encrypted.length){
 				newStr += encrypted[k] ? c : letter;
 				k++;
 			}
@@ -64,7 +64,7 @@ public class Stego {
 		
 		int k = 0;
 		for (int i = 0; i < arrayStr.length; i++) {
-			if(k >= length - 1){
+			if(k >= length){
 				break;
 			}
 			

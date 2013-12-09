@@ -2,6 +2,7 @@ package org.stego;
 
 import java.math.BigInteger;
 
+import org.stego.helpers.Helpers;
 import org.stego.models.CryptoText;
 
 public class Encryption {
@@ -16,7 +17,7 @@ public class Encryption {
 	
 	//Генеруэться взємно просте число із n
 	private BigInteger newPrimareX() {
-		BigInteger primareX = GMAlgorithm.newPrimare(8);
+		BigInteger primareX = GMAlgorithm.newPrimare(256);
 		
 		boolean isModEqual = n.remainder(primareX).toString().equals("0");
 		

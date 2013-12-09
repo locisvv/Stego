@@ -1,6 +1,7 @@
 package org.stego;
 
 import java.math.BigInteger;
+
 import org.stego.models.Euclidean;
 
 public class Decryption {
