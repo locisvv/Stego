@@ -15,8 +15,9 @@ public class StegoMain {
 //		boolean[] k2 = {true, true, true, false, false, false}; //111000
 
 		Alfabet alfabet = new Alfabet();
-		boolean[] arrayBolean = alfabet.strToBits("привіт");
-		
+		String text = "привіт";
+		boolean[] arrayBolean = alfabet.strToBits(text);
+		Helpers.p(text);
 		Helpers.printArray(arrayBolean);
 		
 		BigInteger p = GMAlgorithm.newPrimare(16);
@@ -33,7 +34,9 @@ public class StegoMain {
 		Helpers.printArray(encArray);
 		
 		Decryption d = new Decryption(p, q);
-		Helpers.printArray(d.decryption(encArray, cryptoText.lastX));
+		boolean[] bits = d.decryption(encArray, cryptoText.lastX);
+		Helpers.printArray(bits);
+		Helpers.p(alfabet.bitsToStr(bits));
 	}
 
 }

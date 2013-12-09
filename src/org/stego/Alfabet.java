@@ -154,6 +154,28 @@ public class Alfabet {
 		return n != null ? (int) n : -1;
 	}
 	
+	public static String bitsToStr(boolean[] bits) {
+		String str = "";
+		String strBits = "";
+		int countrt = 0;
+
+		for (int i = 0; i < bits.length; i++) {
+			strBits += bits[i] ? 1 : 0;
+
+			if(countrt == 5){
+				int bb = Integer.parseInt(strBits, 2);
+				str += alfabet[bb];
+				strBits = "";
+				countrt = 0;
+			}
+			else{
+				countrt++;
+			}			
+		}
+		return str;
+	}
+	
+	
 	public static void main(String[] arg){
 //		for(int i = 0; i < 64; i++){
 //			int b = i;
@@ -169,9 +191,7 @@ public class Alfabet {
 //			}
 //			System.out.println("{" + s.substring(0, s.length()-2) + "},");
 //		}
-		
-//		Helpers.p(alfabet().length + "");
+
 		initAlfabetUA();
-		Helpers.printArray(strToBits("ààa"));
 	}
 }
